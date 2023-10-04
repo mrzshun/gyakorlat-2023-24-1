@@ -12,11 +12,17 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        $users = \App\Models\User::factory(10)->create();
+        $categories = \App\Models\Category::factory(10)->create();
+        $posts = \App\Models\Post::factory(10)->create();
+        $comments = \App\Models\Comment::factory(10)->create();
+        foreach($posts as $post) {
+            $post->author()->associate(\App\Models\User::all()->random())->save(); 
+            $post->categories()->sync(
+                $categories->random(
+                    rand(1,$categories->count())
+                )
+            );
+        }
     }
 }
