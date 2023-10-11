@@ -17,7 +17,9 @@ class DatabaseSeeder extends Seeder
         $posts = \App\Models\Post::factory(10)->create();
         $comments = \App\Models\Comment::factory(10)->create();
         foreach($posts as $post) {
-            $post->author()->associate(\App\Models\User::all()->random())->save(); 
+            if(rand(1,10)>5) {
+                $post->author()->associate(\App\Models\User::all()->random())->save();
+            }
             $post->categories()->sync(
                 $categories->random(
                     rand(1,$categories->count())
