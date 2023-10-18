@@ -18,7 +18,7 @@ class CategoryFactory extends Factory
     {
         return [
             'name' => fake()->word(),
-            'style' => fake()->randomElement([ 'primary','secondary','success','danger','warning','info','light','dark']),
+            'style' => fake()->randomElement([ 'primary','secondary','success','danger','warning','info','dark']),
         ];
     }
 }

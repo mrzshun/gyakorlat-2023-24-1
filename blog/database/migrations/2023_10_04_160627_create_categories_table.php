@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->timestamps();
             $table->string('name');
-            $table->enum('style',[ 'primary','secondary','success','danger','warning','info','light','dark']);
+            $table->enum('style',[ 'primary','secondary','success','danger','warning','info','dark']);
         });
     }
 
