@@ -26,6 +26,9 @@ Route::resource('posts', PostController::class);
 
 Route::resource('categories', CategoryController::class);
 
+Auth::routes();
+
+
 
 // Route::get('/posts', function () {
 //     return view('posts.index', [
@@ -58,9 +61,5 @@ Route::resource('categories', CategoryController::class);
 // });
 
 // // -----------------------------------------
-
-// Auth::routes();
-
-// Auth::routes();
 
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

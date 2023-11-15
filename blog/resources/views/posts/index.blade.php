@@ -32,7 +32,7 @@
                     @forelse ($posts as $post)
                         <div class="col-12 col-md-6 col-lg-4 mb-3 d-flex align-self-stretch">
                             <div class="card w-100">
-                                <img src="{{ asset('images/default_post_cover.jpg') }}" class="card-img-top"
+                                <img src="{{ !isset($post->cover_image_path) ? asset('images/default_post_cover.jpg') : "./storage/".$post->cover_image_path }}" class="card-img-top"
                                     alt="Post cover">
                                 <div class="card-body">
                                     {{-- TODO: Title --}}
