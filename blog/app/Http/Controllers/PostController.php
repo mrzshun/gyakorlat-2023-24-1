@@ -9,6 +9,8 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 
 
@@ -31,6 +33,9 @@ class PostController extends Controller
      */
     public function create()
     {
+        //if(! Gate::allows('user-id-is-one')) {
+        //    abort(403);
+        //}
         return view("posts.create",[
             "categories" => Category::all(),
         ]);
@@ -41,6 +46,9 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
+        if(!Auth::check()) {
+            return redirect('posts');
+        }
         $validated = $request->validate([
             'title' => 'required',
             'description' => 'required',
@@ -62,25 +70,28 @@ class PostController extends Controller
             'description' => $validated['description'],
             'text' => $validated['text'],
             'cover_image_path' => $filename,
+            'author_id' => $request->user()->id,
         ]);
         isset($validated['categories']) ? $post->categories()->sync($validated['categories']) : '';
         //dd($validated['categories']);
         Session::flash('post_created');
-        return redirect()->route('posts.create');
+        return redirect()->route('posts.show',$post);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Post $post)
     {
-        //
+        return view('posts.show',[
+            'post' => $post,
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Post $post)
     {
         //
     }
@@ -88,7 +99,7 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Post $post)
     {
         //
     }
@@ -96,8 +107,10 @@ class PostController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Post $post)
     {
-        //
+        $this->authorize('delete',$post);
+        $post->delete();
+        return redirect()->route('posts.index');
     }
 }
