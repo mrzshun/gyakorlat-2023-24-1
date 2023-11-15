@@ -41,14 +41,15 @@
             <div class="col-12 col-md-4">
                 <div class="float-lg-end">
 
-                    {{-- TODO: Links, policy --}}
-                    <a role="button" class="btn btn-sm btn-primary" href="#"><i class="far fa-edit"></i> Edit
-                        post</a>
-                    @can('delete',$post)
-                    <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#delete-confirm-modal"><i
-                            class="far fa-trash-alt">
-                            <span></i> Delete post</span>
-                    </button>
+                    @can('update', $post)
+                        <a role="button" class="btn btn-sm btn-primary" href="{{route('posts.edit',$post)}}"><i class="far fa-edit"></i> Edit
+                            post</a>
+                    @endcan
+                    @can('delete', $post)
+                        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#delete-confirm-modal"><i
+                                class="far fa-trash-alt">
+                                <span></i> Delete post</span>
+                        </button>
                     @endcan
 
                 </div>
@@ -76,7 +77,8 @@
                         </button>
 
                         {{-- TODO: Route, directives --}}
-                        <form id="delete-post-form" action="{{route('posts.destroy',$post)}}" method="POST" class="d-none">
+                        <form id="delete-post-form" action="{{ route('posts.destroy', $post) }}" method="POST"
+                            class="d-none">
                             @csrf
                             @method('DELETE')
                         </form>
@@ -89,8 +91,7 @@
             alt="Cover preview" class="my-3">
 
         <div class="mt-3">
-            {{-- TODO: Post paragraphs --}}
-            Lorem ipsum
+            {{$post->text}}
         </div>
     </div>
 @endsection
