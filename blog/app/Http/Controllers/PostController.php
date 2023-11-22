@@ -1,15 +1,18 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\User;
+
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
+
 
 class PostController extends Controller
 {
@@ -33,7 +36,7 @@ class PostController extends Controller
         //if(! Gate::allows('user-id-is-one')) {
         //    abort(403);
         //}
-        return view("posts.create", [
+        return view("posts.create",[
             "categories" => Category::all(),
         ]);
     }
@@ -43,7 +46,7 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        if (!Auth::check()) {
+        if(!Auth::check()) {
             return redirect('posts');
         }
         $validated = $request->validate([
@@ -55,11 +58,11 @@ class PostController extends Controller
             'cover_image' => 'file|mimes:jpg,png|max:4096',
         ]);
         $filename = '';
-        if ($request->hasFile('cover_image')) {
+        if($request->hasFile('cover_image')){
             $file = $request->file('cover_image');
-            $filename = 'cover_image_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
+            $filename = 'cover_image_'.Str::random(10).'.'.$file->getClientOriginalExtension();
             Storage::disk('public')->put(
-                $filename, $file->get()
+                $filename,$file->get()
             );
         }
         $post = Post::factory()->create([
@@ -72,7 +75,7 @@ class PostController extends Controller
         isset($validated['categories']) ? $post->categories()->sync($validated['categories']) : '';
         //dd($validated['categories']);
         Session::flash('post_created');
-        return redirect()->route('posts.show', $post);
+        return redirect()->route('posts.show',$post);
     }
 
     /**
@@ -80,7 +83,7 @@ class PostController extends Controller
      */
     public function show(Post $post)
     {
-        return view('posts.show', [
+        return view('posts.show',[
             'post' => $post,
         ]);
     }
@@ -90,7 +93,7 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        return view('posts.edit', [
+        return view('posts.edit',[
             'post' => $post,
             'categories' => Category::all(),
         ]);
@@ -141,7 +144,7 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        $this->authorize('delete', $post);
+        $this->authorize('delete',$post);
         $post->delete();
         return redirect()->route('posts.index');
     }
