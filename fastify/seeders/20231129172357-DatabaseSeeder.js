@@ -19,20 +19,36 @@ module.exports = {
         );
       }
       const postNum = faker.number.int({ min: 10, max: 15 });
+      const posts = [];
       for (let i = 0; i < postNum; i++) {
-        await Post.create({
-          title: faker.lorem.sentence({ min: 4, max: 6 }).slice(0, -1),
-          description: faker.lorem.sentences({ min: 2, max: 4 }),
-          text: faker.lorem.paragraphs({ min: 3, max: 6 }),
-          UserId: faker.helpers.arrayElement(users).id,
-        })
+        posts.push(
+            await Post.create({
+            title: faker.lorem.sentence({ min: 4, max: 6 }).slice(0, -1),
+            description: faker.lorem.sentences({ min: 2, max: 4 }),
+            text: faker.lorem.paragraphs({ min: 3, max: 6 }),
+            UserId: faker.helpers.arrayElement(users).id,
+          })
+        );
       }
       const catNum = faker.number.int({ min: 6, max: 8 });
+      const categories = [];
       for (let i = 0; i < catNum; i++) {
-        await Category.create({
-          name: faker.lorem.word(),
-          color: faker.color.rgb({ casing: 'lower' }),
-        })
+          categories.push(
+            await Category.create({
+            name: faker.lorem.word(),
+            color: faker.color.rgb({ casing: 'lower' }),
+          })
+        );
+      }
+      for(const post of posts) {
+        let postCat = faker.helpers.arrayElements(
+          categories,
+          faker.number.int({
+            min: 0,
+            max: catNum,
+          })
+        );
+        await post.setCategories(postCat);
       }
 
     } catch (error) {

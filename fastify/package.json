@@ -3,6 +3,7 @@
     "db": "npx rimraf database/database.sqlite && npx sequelize db:migrate --debug && npx sequelize db:seed:all --debug"
   },
   "dependencies": {
+    "fastify": "^4.24.3",
     "md5": "^2.3.0",
     "rimraf": "^5.0.5",
     "sequelize": "^6.35.1",
@@ -10,6 +11,7 @@
   },
   "devDependencies": {
     "@faker-js/faker": "^8.3.1",
+    "nodemon": "^3.0.2",
     "sequelize-cli": "^6.6.2"
   }
 }
