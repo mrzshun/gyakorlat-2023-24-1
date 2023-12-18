@@ -8,12 +8,19 @@ const fastify = require('fastify')({
     logger: true
 })
 
+const context = (request) => {
+    return {
+        request,
+    };
+};
+
 fastify.register(mercurius, {
     schema: readFileSync("./gql/schema.gql").toString(),
     resolvers: require("./gql/resolvers"),
-    graphiql: true
+    graphiql: true,
+    context,
+    // A fastify-hez érkezett kérést berakjuk a context-be
 })
-
 
 
 // fastify.addHook('onRequest', async (request, reply) => {

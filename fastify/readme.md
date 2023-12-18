@@ -15,3 +15,8 @@ DELETE /categories      //mind törlése
 DELETE /categories/:id  //egy törlése
 
 https://www.npmjs.com/package/fastify
+
+https://jwt.io/
+
+
+npx nodemon -e js,mjs,json,gql server.js

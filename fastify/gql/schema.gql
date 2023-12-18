@@ -4,7 +4,36 @@ type Query {
     add(x:Int,y:Int): Int
     mult(x:Int,y:Int):Int
     hello: String
+    who: String
     categories: [Category]
+    posts: [Post]
+}
+
+input CategoryInput {
+    name: String!
+    color: String!
+}
+
+input PostInput {
+    title: String!
+    description: String!
+    text: String!
+    categories: [Int]
+}
+
+input PostUpdater {
+    id: Int!
+    title: String!
+    description: String!
+    text: String!
+    categories: [Int]
+}
+
+
+type Mutation {
+    createCategory(category: CategoryInput): Category
+    createPost(post: PostInput): Post
+    updatePost(post: PostUpdater): Post
 }
 
 type Category {
@@ -13,4 +42,16 @@ type Category {
     color: String!
     createdAt: Date!
     updatedAt: Date!
+    posts: [Post]
+}
+
+type Post {
+    id: Int!
+    title: String!
+    description: String!
+    text: String!
+    userId: Int
+    createdAt: Date!
+    updatedAt: Date!
+    categories: [Category]
 }
