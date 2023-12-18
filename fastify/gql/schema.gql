@@ -1,0 +1,16 @@
+scalar Date
+
+type Query {
+    add(x:Int,y:Int): Int
+    mult(x:Int,y:Int):Int
+    hello: String
+    categories: [Category]
+}
+
+type Category {
+    id: Int!
+    name: String!
+    color: String!
+    createdAt: Date!
+    updatedAt: Date!
+}

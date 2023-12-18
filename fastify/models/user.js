@@ -13,6 +13,13 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
       User.hasMany(models.Post);
     }
+    toJSON() {
+      const data = this.get();
+      delete data.password;
+      delete data.createdAt;
+      delete data.updatedAt;
+      return data;
+    }
   }
   User.init({
     name: DataTypes.STRING,

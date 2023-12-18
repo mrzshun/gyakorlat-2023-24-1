@@ -1,8 +1,57 @@
 const { User, Post, Category } = require("./models");
+const { readFileSync } = require("fs");
+var md5 = require('md5');
+const mercurius = require('mercurius');
+
 
 const fastify = require('fastify')({
     logger: true
 })
+
+fastify.register(mercurius, {
+    schema: readFileSync("./gql/schema.gql").toString(),
+    resolvers: require("./gql/resolvers"),
+    graphiql: true
+})
+
+
+
+// fastify.addHook('onRequest', async (request, reply) => {
+//     try {
+//         await request.jwtVerify();
+//     } catch (err) {
+//         reply.send(err);
+//     }
+// })
+
+fastify.register(require('@fastify/jwt'), {
+    secret: 'secret'
+});
+
+fastify.post('/login', {
+    schema: {
+        body: {
+            type: 'object',
+            required: ['email', 'password'],
+            properties: {
+                email: { type: 'string' },
+                password: { type: 'string' }
+            }
+        }
+    }
+}, async (request, reply) => {
+    const { email, password } = request.body;
+    const user = await User.findOne({ where: { email: email } });
+    if (!user) {
+        return reply.status(401).send({ message: "user does not exist" });
+    } else if (user.password != md5(password)) {
+        return reply.status(401).send({ message: "user's password does not match" });
+    } else {
+        const token = fastify.jwt.sign({ payload: user.toJSON() });
+        return reply.send({ token });
+    }
+})
+
 
 // Declare a route
 fastify.get('/', (request, reply) => {
@@ -31,20 +80,36 @@ fastify.get('/categories/:id', {
     reply.send(category);
 })
 
+fastify.decorate("authenticate", async (request, reply) => {
+    try {
+        await request.jwtVerify();
+    } catch (err) {
+        reply.send(err);
+    }
+})
+
+fastify.get("/who", {
+    onRequest: [fastify.authenticate],
+},
+async (request,reply) => {
+    reply.send(request.user);
+})
+
 fastify.post('/categories', {
+    onRequest: [fastify.authenticate],
     schema: {
         body: {
             type: 'object',
             required: ['name', 'color'],
             properties: {
                 name: { type: 'string' },
-                color: { type: 'string', pattern: '^#[0-9a-fA-F]{6}$'}
+                color: { type: 'string', pattern: '^#[0-9a-fA-F]{6}$' }
             }
         }
     }
 }, async (request, reply) => {
-    const {name,color} = request.body;
-    const category = await Category.create({name,color});
+    const { name, color } = request.body;
+    const category = await Category.create({ name, color });
     reply.send(category);
 })
 
@@ -61,7 +126,7 @@ fastify.put('/categories/:id', {
             required: ['name', 'color'],
             properties: {
                 name: { type: 'string' },
-                color: { type: 'string', pattern: '^#[0-9a-fA-F]{6}$'}
+                color: { type: 'string', pattern: '^#[0-9a-fA-F]{6}$' }
             }
         }
     }
@@ -70,8 +135,8 @@ fastify.put('/categories/:id', {
     if (category == null) {
         return reply.status(404).send({ message: "There is no category with the given ID - ".concat(request.params.id) });
     }
-    const {name,color} = request.body;
-    await category.update({name,color});
+    const { name, color } = request.body;
+    await category.update({ name, color });
     reply.send(category);
 })
 
@@ -88,7 +153,7 @@ fastify.patch('/categories/:id', {
             type: 'object',
             properties: {
                 name: { type: 'string' },
-                color: { type: 'string', pattern: '^#[0-9a-fA-F]{6}$'}
+                color: { type: 'string', pattern: '^#[0-9a-fA-F]{6}$' }
             }
         }
     }
@@ -97,8 +162,8 @@ fastify.patch('/categories/:id', {
     if (category == null) {
         return reply.status(404).send({ message: "There is no category with the given ID - ".concat(request.params.id) });
     }
-    const {name,color} = request.body;
-    await category.update({name,color});
+    const { name, color } = request.body;
+    await category.update({ name, color });
     reply.send(category);
 })
 
